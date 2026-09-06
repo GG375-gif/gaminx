@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Community - GAMINX</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    background:#0a0a0a;
+    color:white;
+}
+
+nav{
+    background:#111;
+    padding:20px 8%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:bold;
+}
+
+.logo span{
+    color:#00d4ff;
+}
+
+.back{
+    background:#00d4ff;
+    color:#000;
+    text-decoration:none;
+    padding:10px 18px;
+    border-radius:6px;
+    font-weight:bold;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+    padding:40px 20px;
+}
+
+.title{
+    font-size:38px;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    color:#999;
+    margin-bottom:30px;
+}
+
+.create-post{
+    background:#151515;
+    padding:25px;
+    border-radius:12px;
+    margin-bottom:30px;
+}
+
+.create-post textarea{
+    width:100%;
+    height:100px;
+    resize:none;
+    padding:15px;
+    border:none;
+    border-radius:8px;
+    background:#222;
+    color:white;
+    font-size:16px;
+}
+
+.post-btn{
+    margin-top:15px;
+    background:#00d4ff;
+    border:none;
+    padding:12px 22px;
+    border-radius:6px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.post{
+    background:#151515;
+    padding:22px;
+    border-radius:12px;
+    margin-bottom:18px;
+}
+
+.username{
+    color:#00d4ff;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.post-text{
+    color:#ddd;
+    line-height:1.6;
+    margin-bottom:15px;
+}
+
+.like-btn{
+    background:#222;
+    border:none;
+    color:white;
+    padding:8px 14px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.empty{
+    text-align:center;
+    color:#777;
+    padding:30px;
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+    <div class="logo">GAMIN<span>X</span></div>
+    <a href="index.html" class="back">← Home</a>
+</nav>
+
+<div class="container">
+
+    <h1 class="title">GaminX Community</h1>
+    <p class="subtitle">Discuss games, share opinions and connect with gamers.</p>
+
+    <div class="create-post">
+        <textarea id="postInput" placeholder="What's on your mind, gamer?"></textarea>
+        <button class="post-btn" onclick="createPost()">Post Discussion</button>
+    </div>
+
+    <div id="posts"></div>
+
+</div>
+
+<script>
+
+let posts = JSON.parse(localStorage.getItem("gaminxPosts")) || [];
+
+function createPost(){
+
+    const input = document.getElementById("postInput");
+    const text = input.value.trim();
+
+    const username = localStorage.getItem("gaminxUsername");
+
+    if(!localStorage.getItem("gaminxLoggedIn")){
+        alert("Please login before posting!");
+        window.location.href = "login.html";
+        return;
+    }
+
+    if(text === ""){
+        alert("Please write something!");
+        return;
+    }
+
+    posts.unshift({
+        username: username || "Gamer",
+        text: text,
+        likes: 0
+    });
+
+    localStorage.setItem("gaminxPosts", JSON.stringify(posts));
+
+    input.value = "";
+
+    displayPosts();
+}
+
+function displayPosts(){
+
+    const postsContainer = document.getElementById("posts");
+
+    if(posts.length === 0){
+        postsContainer.innerHTML =
+        `<div class="empty">No discussions yet. Be the first gamer to post! 🎮</div>`;
+        return;
+    }
+
+    postsContainer.innerHTML = "";
+
+    posts.forEach((post, index) => {
+
+        postsContainer.innerHTML += `
+        <div class="post">
+            <div class="username">🎮 ${post.username}</div>
+            <div class="post-text">${post.text}</div>
+
+            <button class="like-btn" onclick="likePost(${index})">
+                ❤️ ${post.likes}
+            </button>
+        </div>
+        `;
+    });
+}
+
+function likePost(index){
+
+    posts[index].likes++;
+
+    localStorage.setItem("gaminxPosts", JSON.stringify(posts));
+
+    displayPosts();
+}
+
+displayPosts();
+
+</script>
+
+</body>
+</html>
